@@ -23,19 +23,19 @@ import {
   type FeeStructureId,
   type Processor,
 } from '@/lib/fees';
+import { CURRENCIES, formatAmount, type CurrencyCode } from '@/lib/currency';
 
 type Mode = 'receive' | 'charge';
-
-function formatCurrency(value: number): string {
-  return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-}
 
 export default function FeeCalculator() {
   const [processor, setProcessor] = useState<Processor>('stripe');
   const [mode, setMode] = useState<Mode>('receive');
   const [structureId, setStructureId] = useState<FeeStructureId>('stripe_us');
+  const [currency, setCurrency] = useState<CurrencyCode>('USD');
   const [amount, setAmount] = useState('1000');
   const [copied, setCopied] = useState(false);
+
+  const formatCurrency = (value: number) => formatAmount(value, currency);
 
   const structure = FEE_STRUCTURES[structureId];
   const parsedAmount = Number(amount);
@@ -94,14 +94,29 @@ export default function FeeCalculator() {
             <label htmlFor="amount" className="mb-1 block text-sm font-medium text-muted-foreground">
               {mode === 'receive' ? 'Target net amount' : 'Amount to charge'}
             </label>
-            <div className="flex items-center rounded-md border border-input bg-transparent px-3 focus-within:ring-1 focus-within:ring-ring">
-              <span className="mr-1 text-muted-foreground">$</span>
+            <div className="flex items-center rounded-md border border-input bg-transparent pl-1 pr-3 focus-within:ring-1 focus-within:ring-ring">
+              <Select value={currency} onValueChange={(v) => setCurrency(v as CurrencyCode)}>
+                <SelectTrigger
+                  id="currency"
+                  aria-label="Currency"
+                  className="h-8 w-[72px] shrink-0 border-0 bg-transparent px-1.5 text-muted-foreground shadow-none focus:ring-0"
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.values(CURRENCIES).map((c) => (
+                    <SelectItem key={c.code} value={c.code}>
+                      {c.code} {c.symbol}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <Input
                 id="amount"
                 inputMode="decimal"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="border-0 px-0 shadow-none focus-visible:ring-0"
+                className="border-0 px-1 shadow-none focus-visible:ring-0"
                 placeholder="0.00"
               />
             </div>
