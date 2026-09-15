@@ -1,100 +1,164 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { Check, Copy } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import {
-  STRIPE_US_FEE_RATE,
-  STRIPE_US_FIXED_FEE,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import {
+  FEE_STRUCTURES,
+  PROCESSOR_STRUCTURES,
   calculateGrossFromNet,
   calculateNetFromGross,
+  type FeeStructureId,
+  type Processor,
 } from '@/lib/fees';
 
 type Mode = 'receive' | 'charge';
 
 function formatCurrency(value: number): string {
-  return value.toLocaleString('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  });
+  return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
 }
 
 export default function FeeCalculator() {
+  const [processor, setProcessor] = useState<Processor>('stripe');
   const [mode, setMode] = useState<Mode>('receive');
+  const [structureId, setStructureId] = useState<FeeStructureId>('stripe_us');
   const [amount, setAmount] = useState('1000');
+  const [copied, setCopied] = useState(false);
 
+  const structure = FEE_STRUCTURES[structureId];
   const parsedAmount = Number(amount);
   const isValid = amount.trim() !== '' && Number.isFinite(parsedAmount) && parsedAmount >= 0;
 
   const breakdown = useMemo(() => {
     if (!isValid) return null;
     return mode === 'receive'
-      ? calculateGrossFromNet(parsedAmount)
-      : calculateNetFromGross(parsedAmount);
-  }, [mode, parsedAmount, isValid]);
+      ? calculateGrossFromNet(parsedAmount, structure)
+      : calculateNetFromGross(parsedAmount, structure);
+  }, [mode, parsedAmount, isValid, structure]);
+
+  function handleProcessorChange(next: Processor) {
+    setProcessor(next);
+    setStructureId(PROCESSOR_STRUCTURES[next][0].id);
+  }
+
+  async function handleCopy() {
+    if (!breakdown) return;
+    const summary = `Gross: ${formatCurrency(breakdown.gross)}\nProcessing fee: ${formatCurrency(breakdown.fee)}\nNet: ${formatCurrency(breakdown.net)}`;
+    try {
+      await navigator.clipboard.writeText(summary);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // Clipboard API unavailable (e.g. insecure context) — silently ignore.
+    }
+  }
 
   return (
-    <div className="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900/70 p-6 shadow-2xl shadow-black/40 backdrop-blur">
-      <div className="mb-6 flex rounded-lg bg-slate-950/60 p-1 text-sm font-medium">
-        <button
-          type="button"
-          onClick={() => setMode('receive')}
-          className={`flex-1 rounded-md py-2 transition-colors ${
-            mode === 'receive'
-              ? 'bg-slate-800 text-white shadow-sm'
-              : 'text-slate-400 hover:text-slate-200'
-          }`}
+    <Card className="w-full max-w-md border-border/60 bg-card/70 shadow-2xl shadow-black/40 backdrop-blur">
+      <CardContent className="p-6">
+        <Tabs value={processor} onValueChange={(v) => handleProcessorChange(v as Processor)} className="mb-6">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="stripe">Stripe</TabsTrigger>
+            <TabsTrigger value="paypal">PayPal</TabsTrigger>
+          </TabsList>
+        </Tabs>
+
+        <ToggleGroup
+          type="single"
+          value={mode}
+          onValueChange={(v) => v && setMode(v as Mode)}
+          className="mb-6 grid w-full grid-cols-2 rounded-lg bg-muted p-1"
         >
-          I want to receive
-        </button>
-        <button
-          type="button"
-          onClick={() => setMode('charge')}
-          className={`flex-1 rounded-md py-2 transition-colors ${
-            mode === 'charge'
-              ? 'bg-slate-800 text-white shadow-sm'
-              : 'text-slate-400 hover:text-slate-200'
-          }`}
-        >
-          I want to charge
-        </button>
-      </div>
+          <ToggleGroupItem value="receive" className="rounded-md text-sm data-[state=on]:bg-background">
+            I want to receive
+          </ToggleGroupItem>
+          <ToggleGroupItem value="charge" className="rounded-md text-sm data-[state=on]:bg-background">
+            If I charge this amount
+          </ToggleGroupItem>
+        </ToggleGroup>
 
-      <label htmlFor="amount" className="mb-1 block text-sm font-medium text-slate-300">
-        {mode === 'receive' ? 'Target net amount' : 'Amount to charge'}
-      </label>
-      <div className="mb-4 flex items-center rounded-lg border border-slate-700 bg-slate-950/60 px-3 py-2 focus-within:border-emerald-500 focus-within:ring-1 focus-within:ring-emerald-500">
-        <span className="mr-1 text-slate-500">$</span>
-        <input
-          id="amount"
-          inputMode="decimal"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          className="w-full bg-transparent text-white outline-none placeholder:text-slate-600"
-          placeholder="0.00"
-        />
-      </div>
+        <div className="mb-4 grid grid-cols-2 gap-3">
+          <div>
+            <label htmlFor="amount" className="mb-1 block text-sm font-medium text-muted-foreground">
+              {mode === 'receive' ? 'Target net amount' : 'Amount to charge'}
+            </label>
+            <div className="flex items-center rounded-md border border-input bg-transparent px-3 focus-within:ring-1 focus-within:ring-ring">
+              <span className="mr-1 text-muted-foreground">$</span>
+              <Input
+                id="amount"
+                inputMode="decimal"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                className="border-0 px-0 shadow-none focus-visible:ring-0"
+                placeholder="0.00"
+              />
+            </div>
+          </div>
 
-      <p className="mb-4 text-xs text-slate-500">
-        Stripe (US domestic) · {(STRIPE_US_FEE_RATE * 100).toFixed(1)}% + {formatCurrency(STRIPE_US_FIXED_FEE)}
-      </p>
+          <div>
+            <label htmlFor="transaction-type" className="mb-1 block text-sm font-medium text-muted-foreground">
+              Transaction type
+            </label>
+            <Select value={structureId} onValueChange={(v) => setStructureId(v as FeeStructureId)}>
+              <SelectTrigger id="transaction-type">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {PROCESSOR_STRUCTURES[processor].map((s) => (
+                  <SelectItem key={s.id} value={s.id}>
+                    {s.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
 
-      {breakdown ? (
-        <dl className="space-y-2 rounded-lg border border-slate-800 bg-slate-950/40 p-4 text-sm">
-          <div className="flex justify-between">
-            <dt className="text-slate-400">Gross amount</dt>
-            <dd className="font-semibold text-slate-100">{formatCurrency(breakdown.gross)}</dd>
-          </div>
-          <div className="flex justify-between">
-            <dt className="text-slate-400">Processing fee</dt>
-            <dd className="font-semibold text-slate-100">-{formatCurrency(breakdown.fee)}</dd>
-          </div>
-          <div className="flex justify-between border-t border-slate-800 pt-2">
-            <dt className="text-slate-300">Net amount</dt>
-            <dd className="font-bold text-emerald-400">{formatCurrency(breakdown.net)}</dd>
-          </div>
-        </dl>
-      ) : (
-        <p className="text-sm text-red-400">Enter a valid, non-negative amount.</p>
-      )}
-    </div>
+        <p className="mb-4 text-xs text-muted-foreground">
+          {processor === 'stripe' ? 'Stripe' : 'PayPal'} · {structure.label} ·{' '}
+          {(structure.rate * 100).toFixed(2)}%
+          {structure.fixedFee > 0 && ` + ${formatCurrency(structure.fixedFee)}`}
+          {structure.minFee !== undefined &&
+            ` (min ${formatCurrency(structure.minFee)}, max ${formatCurrency(structure.maxFee ?? 0)})`}
+        </p>
+
+        {breakdown ? (
+          <>
+            <dl className="space-y-2 rounded-lg border border-border/60 bg-background/40 p-4 text-sm">
+              <div className="flex justify-between">
+                <dt className="text-muted-foreground">Gross amount</dt>
+                <dd className="font-semibold">{formatCurrency(breakdown.gross)}</dd>
+              </div>
+              <div className="flex justify-between">
+                <dt className="text-muted-foreground">Processing fee</dt>
+                <dd className="font-semibold">-{formatCurrency(breakdown.fee)}</dd>
+              </div>
+              <div className="flex justify-between border-t border-border/60 pt-2">
+                <dt className="text-foreground">Net amount</dt>
+                <dd className="font-bold text-primary">{formatCurrency(breakdown.net)}</dd>
+              </div>
+            </dl>
+            <Button variant="secondary" className="mt-4 w-full" onClick={handleCopy}>
+              {copied ? <Check /> : <Copy />}
+              {copied ? 'Copied' : 'Copy breakdown'}
+            </Button>
+          </>
+        ) : (
+          <p className="text-sm text-destructive">Enter a valid, non-negative amount.</p>
+        )}
+      </CardContent>
+    </Card>
   );
 }

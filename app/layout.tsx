@@ -20,7 +20,7 @@ export default function RootLayout({
       <head>
         <meta name="google-adsense-account" content="ca-pub-2547322896496789" />
       </head>
-      <body className="bg-slate-950 font-sans text-slate-50 antialiased">{children}</body>
+      <body className="bg-background font-sans text-foreground antialiased">{children}</body>
     </html>
   );
 }
