@@ -19,6 +19,11 @@ export default function RootLayout({
     <html lang="en" className={inter.variable}>
       <head>
         <meta name="google-adsense-account" content="ca-pub-2547322896496789" />
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2547322896496789"
+          crossOrigin="anonymous"
+        ></script>
       </head>
       <body className="bg-background font-sans text-foreground antialiased">{children}</body>
     </html>

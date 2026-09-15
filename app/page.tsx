@@ -1,3 +1,4 @@
+import AdUnit from '@/components/AdUnit';
 import FeeCalculator from '@/components/FeeCalculator';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -43,7 +44,11 @@ export default function Home() {
         <Badge variant="secondary">Updated for 2026</Badge>
       </header>
 
-      <section className="relative mx-auto flex max-w-3xl flex-col items-center px-4 pb-16 pt-16 text-center sm:pt-20">
+      <div className="relative mx-auto max-w-3xl px-4">
+        <AdUnit />
+      </div>
+
+      <section className="relative mx-auto flex max-w-3xl flex-col items-center px-4 pb-16 pt-8 text-center sm:pt-12">
         <span className="mb-4 text-xs font-medium uppercase tracking-wide text-primary">
           Simple, transparent estimates
         </span>
@@ -56,26 +61,9 @@ export default function Home() {
         </p>
       </section>
 
-      <section className="relative mx-auto grid max-w-5xl gap-8 px-4 pb-16 lg:grid-cols-[1fr_auto]">
-        <div className="flex justify-center">
-          <FeeCalculator />
-        </div>
-
-        <aside
-          aria-label="Advertisement"
-          className="hidden w-[160px] shrink-0 items-center justify-center rounded-lg border border-dashed border-border text-xs text-muted-foreground lg:flex"
-          style={{ minHeight: 600 }}
-        >
-          Ad slot 160×600
-        </aside>
+      <section className="relative mx-auto flex max-w-3xl justify-center px-4 pb-16">
+        <FeeCalculator />
       </section>
-
-      <div
-        aria-label="Advertisement"
-        className="relative mx-auto mb-16 flex h-[90px] max-w-3xl items-center justify-center rounded-lg border border-dashed border-border px-4 text-xs text-muted-foreground"
-      >
-        Ad slot 728×90
-      </div>
 
       <section className="relative mx-auto max-w-3xl px-4 pb-16">
         <article className="space-y-6">
@@ -130,6 +118,10 @@ export default function Home() {
           ))}
         </Accordion>
       </section>
+
+      <div className="relative mx-auto max-w-3xl px-4">
+        <AdUnit />
+      </div>
 
       <footer className="relative mx-auto max-w-3xl px-4 pb-12 text-center text-xs text-muted-foreground">
         <p>FeeWise — clear fees, confident pricing.</p>
