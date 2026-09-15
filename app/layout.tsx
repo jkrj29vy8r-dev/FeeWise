@@ -1,5 +1,8 @@
 import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
 import './globals.css';
+
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
 export const metadata: Metadata = {
   title: 'FeeWise — Payment Fee Calculator',
@@ -13,11 +16,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className={inter.variable}>
       <head>
         <meta name="google-adsense-account" content="ca-pub-2547322896496789" />
       </head>
-      <body>{children}</body>
+      <body className="bg-slate-950 font-sans text-slate-50 antialiased">{children}</body>
     </html>
   );
 }
