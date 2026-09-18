@@ -27,10 +27,16 @@ import { CURRENCIES, formatAmount, type CurrencyCode } from '@/lib/currency';
 
 type Mode = 'receive' | 'charge';
 
-export default function FeeCalculator() {
-  const [processor, setProcessor] = useState<Processor>('stripe');
+export default function FeeCalculator({
+  defaultProcessor = 'stripe',
+}: {
+  defaultProcessor?: Processor;
+}) {
+  const [processor, setProcessor] = useState<Processor>(defaultProcessor);
   const [mode, setMode] = useState<Mode>('receive');
-  const [structureId, setStructureId] = useState<FeeStructureId>('stripe_us');
+  const [structureId, setStructureId] = useState<FeeStructureId>(
+    PROCESSOR_STRUCTURES[defaultProcessor][0].id,
+  );
   const [currency, setCurrency] = useState<CurrencyCode>('USD');
   const [amount, setAmount] = useState('1000');
   const [copied, setCopied] = useState(false);

@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import AdUnit from '@/components/AdUnit';
 import EditorialGuide from '@/components/EditorialGuide';
 import FaqSection from '@/components/FaqSection';
@@ -6,23 +7,13 @@ import Footer from '@/components/Footer';
 import SiteHeader from '@/components/SiteHeader';
 import { faqs } from '@/lib/faqs';
 
-const webApplicationJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'WebApplication',
-  name: 'FeeWise',
-  url: 'https://payfeewise.com',
+export const metadata: Metadata = {
+  title: 'PayPal Fee Calculator',
   description:
-    'Free Stripe, PayPal, and Wise payment processing fee calculator. Figure out what to charge, or what you will actually take home, in USD, EUR, or GBP.',
-  applicationCategory: 'FinanceApplication',
-  operatingSystem: 'Any',
-  offers: {
-    '@type': 'Offer',
-    price: '0',
-    priceCurrency: 'USD',
-  },
+    'Free PayPal fee calculator for US domestic and international checkout. Instantly see the Gross, Processing fee, and Net amount for any payment.',
 };
 
-export default function Home() {
+export default function PaypalFeeCalculatorPage() {
   return (
     <main className="relative min-h-screen overflow-hidden">
       <div
@@ -38,23 +29,23 @@ export default function Home() {
 
       <section className="relative mx-auto flex max-w-3xl flex-col items-center px-4 pb-16 pt-8 text-center sm:pt-12">
         <span className="mb-4 text-xs font-medium uppercase tracking-wide text-primary">
-          Simple, transparent estimates
+          PayPal fee calculator
         </span>
         <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
-          Know exactly what you&apos;ll take home.
+          Calculate PayPal fees instantly.
         </h1>
         <p className="mt-4 max-w-xl text-balance text-base text-muted-foreground sm:text-lg">
-          Compare Stripe, PayPal, and Wise fees side by side, in either direction — figure out
-          what to charge, or what a target payout will actually cost.
+          US Domestic (2.89% + $0.30) and International (3.49% + $0.49) — enter an amount either
+          direction and see the exact Gross, fee, and Net.
         </p>
       </section>
 
       <section className="relative mx-auto flex max-w-3xl justify-center px-4 pb-16">
-        <FeeCalculator />
+        <FeeCalculator defaultProcessor="paypal" />
       </section>
 
       <section className="relative mx-auto max-w-3xl space-y-12 px-4 pb-16">
-        <EditorialGuide />
+        <EditorialGuide focus="paypal" />
         <FaqSection faqs={faqs} />
       </section>
 
@@ -63,12 +54,6 @@ export default function Home() {
       </div>
 
       <Footer />
-
-      <script
-        type="application/ld+json"
-        // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(webApplicationJsonLd) }}
-      />
     </main>
   );
 }

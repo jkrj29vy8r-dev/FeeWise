@@ -5,7 +5,11 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
 export const metadata: Metadata = {
-  title: 'FeeWise — Payment Fee Calculator',
+  metadataBase: new URL('https://payfeewise.com'),
+  title: {
+    default: 'FeeWise — Payment Fee Calculator',
+    template: '%s | FeeWise',
+  },
   description:
     'Calculate payment processor fees and figure out exactly how much to charge or receive.',
 };

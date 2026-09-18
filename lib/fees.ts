@@ -2,14 +2,17 @@ export type Processor = 'stripe' | 'paypal';
 
 export type FeeStructureId = 'stripe_us' | 'stripe_intl' | 'stripe_ach' | 'paypal_us' | 'paypal_intl';
 
-export interface FeeStructure {
-  id: FeeStructureId;
-  processor: Processor;
-  label: string;
+export interface FeeRateConfig {
   rate: number;
   fixedFee: number;
   minFee?: number;
   maxFee?: number;
+}
+
+export interface FeeStructure extends FeeRateConfig {
+  id: FeeStructureId;
+  processor: Processor;
+  label: string;
 }
 
 export const FEE_STRUCTURES: Record<FeeStructureId, FeeStructure> = {
@@ -67,7 +70,7 @@ function round2(value: number): number {
   return Math.round((value + Number.EPSILON) * 100) / 100;
 }
 
-function clampFee(rawFee: number, structure: FeeStructure): number {
+function clampFee(rawFee: number, structure: FeeRateConfig): number {
   let fee = rawFee;
   if (structure.minFee !== undefined) fee = Math.max(fee, structure.minFee);
   if (structure.maxFee !== undefined) fee = Math.min(fee, structure.maxFee);
@@ -79,7 +82,7 @@ function clampFee(rawFee: number, structure: FeeStructure): number {
  * processor's fee is deducted from a known Gross charge.
  * Fee = Gross * Rate + Fixed Fee (clamped to [minFee, maxFee] when set)
  */
-export function calculateNetFromGross(grossAmount: number, structure: FeeStructure): FeeBreakdown {
+export function calculateNetFromGross(grossAmount: number, structure: FeeRateConfig): FeeBreakdown {
   const gross = round2(grossAmount);
   const fee = round2(clampFee(gross * structure.rate + structure.fixedFee, structure));
   const net = round2(gross - fee);
@@ -100,7 +103,7 @@ export function calculateNetFromGross(grossAmount: number, structure: FeeStructu
  * The displayed fee is always Gross - Net (both already rounded to cents),
  * so the three figures reconcile exactly.
  */
-export function calculateGrossFromNet(targetNet: number, structure: FeeStructure): FeeBreakdown {
+export function calculateGrossFromNet(targetNet: number, structure: FeeRateConfig): FeeBreakdown {
   const net = round2(targetNet);
   const { rate, fixedFee, minFee, maxFee } = structure;
 
