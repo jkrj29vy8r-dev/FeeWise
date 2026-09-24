@@ -4,6 +4,7 @@ import FaqSection from '@/components/FaqSection';
 import FeeCalculator from '@/components/FeeCalculator';
 import Footer from '@/components/Footer';
 import SiteHeader from '@/components/SiteHeader';
+import StripeFeesArticle from '@/components/StripeFeesArticle';
 import { faqs } from '@/lib/faqs';
 
 const webApplicationJsonLd = {
@@ -38,14 +39,15 @@ export default function Home() {
 
       <section className="relative mx-auto flex max-w-3xl flex-col items-center px-4 pb-16 pt-8 text-center sm:pt-12">
         <span className="mb-4 text-xs font-medium uppercase tracking-wide text-primary">
-          Simple, transparent estimates
+          Stripe calculator &amp; PayPal fee calculator
         </span>
         <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
           Know exactly what you&apos;ll take home.
         </h1>
         <p className="mt-4 max-w-xl text-balance text-base text-muted-foreground sm:text-lg">
-          Compare Stripe, PayPal, and Wise fees side by side, in either direction — figure out
-          what to charge, or what a target payout will actually cost.
+          A free Stripe fee calculator and PayPal fee calculator in one place — compare Stripe,
+          PayPal, and Wise fees side by side, in either direction, and figure out what to charge
+          or what a target payout will actually cost.
         </p>
       </section>
 
@@ -54,6 +56,7 @@ export default function Home() {
       </section>
 
       <section className="relative mx-auto max-w-3xl space-y-12 px-4 pb-16">
+        <StripeFeesArticle />
         <EditorialGuide />
         <FaqSection faqs={faqs} />
       </section>

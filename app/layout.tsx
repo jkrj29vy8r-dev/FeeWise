@@ -7,11 +7,11 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 export const metadata: Metadata = {
   metadataBase: new URL('https://payfeewise.com'),
   title: {
-    default: 'FeeWise — Payment Fee Calculator',
-    template: '%s | FeeWise',
+    default: 'Stripe Calculator & PayPal Fee Calculator | PayFeeWise',
+    template: '%s | PayFeeWise',
   },
   description:
-    'Calculate payment processor fees and figure out exactly how much to charge or receive.',
+    'Free Stripe & PayPal fee calculator. Calculate exact processing fees, gross amounts, and net payout instantly.',
 };
 
 export default function RootLayout({

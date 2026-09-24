@@ -8,9 +8,9 @@ import SiteHeader from '@/components/SiteHeader';
 import { faqs } from '@/lib/faqs';
 
 export const metadata: Metadata = {
-  title: 'Stripe Fee Calculator',
+  title: 'Stripe Fee Calculator — Calculate Stripe Processing Fees',
   description:
-    'Free Stripe fee calculator for US domestic, international, and ACH transactions. Instantly see the Gross, Processing fee, and Net amount for any charge.',
+    'Free Stripe calculator for US domestic, international, and ACH transactions. Instantly see the exact Gross amount, processing fee, and Net payout for any Stripe charge.',
 };
 
 export default function StripeFeeCalculatorPage() {
@@ -29,14 +29,16 @@ export default function StripeFeeCalculatorPage() {
 
       <section className="relative mx-auto flex max-w-3xl flex-col items-center px-4 pb-16 pt-8 text-center sm:pt-12">
         <span className="mb-4 text-xs font-medium uppercase tracking-wide text-primary">
-          Stripe fee calculator
+          Free online tool
         </span>
         <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
-          Calculate Stripe fees instantly.
+          Stripe Fee Calculator
         </h1>
         <p className="mt-4 max-w-xl text-balance text-base text-muted-foreground sm:text-lg">
-          US Domestic (2.9% + $0.30), International (3.9% + $0.30), and ACH (0.8%, capped at
-          $5.00) — enter an amount either direction and see the exact Gross, fee, and Net.
+          Instantly calculate Stripe processing fees for US Domestic (2.9% + $0.30),
+          International (3.9% + $0.30), and ACH (0.8%, capped at $5.00) payments. This Stripe
+          calculator works in either direction — enter what you want to charge or what you want
+          to receive, and see the exact Gross, fee, and Net.
         </p>
       </section>
 
